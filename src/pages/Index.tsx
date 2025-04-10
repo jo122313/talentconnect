@@ -7,6 +7,8 @@ import FeaturedCompanies from "@/components/FeaturedCompanies";
 import Testimonials from "@/components/Testimonials";
 import CallToAction from "@/components/CallToAction";
 import Footer from "@/components/Footer";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const Index = () => {
   return (
@@ -14,6 +16,14 @@ const Index = () => {
       <Navbar />
       <main>
         <Hero />
+        <div className="container mx-auto mt-8 mb-12 flex justify-center gap-4">
+          <Button asChild variant="outline">
+            <Link to="/employer/dashboard">Employer Dashboard</Link>
+          </Button>
+          <Button asChild>
+            <Link to="/user/dashboard">Candidate Dashboard</Link>
+          </Button>
+        </div>
         <FeaturedCategories />
         <FeaturedJobs />
         <FeaturedCompanies />
