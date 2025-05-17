@@ -8,17 +8,18 @@ const ThemeToggle = () => {
 
   return (
     <Button
-      variant="ghost"
-      size="sm"
+      variant="outline"
+      size="icon"
       onClick={toggleTheme}
-      className="p-2 focus:outline-none"
+      className="rounded-full w-9 h-9 focus:outline-none transition-all duration-300"
       title={theme === "light" ? "Switch to dark mode" : "Switch to light mode"}
     >
       {theme === "light" ? (
-        <Moon className="h-5 w-5" />
+        <Moon className="h-5 w-5 text-job-darkPurple" />
       ) : (
-        <Sun className="h-5 w-5" />
+        <Sun className="h-5 w-5 text-yellow-400" />
       )}
+      <span className="sr-only">Toggle theme</span>
     </Button>
   );
 };
