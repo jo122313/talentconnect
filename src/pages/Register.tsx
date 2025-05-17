@@ -1,6 +1,5 @@
-
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Phone, MapPin, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +11,7 @@ import Footer from "@/components/Footer";
 import { useToast } from "@/hooks/use-toast";
 
 const Register = () => {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [accountType, setAccountType] = useState("jobseeker");
   const [fullName, setFullName] = useState("");
@@ -45,23 +45,37 @@ const Register = () => {
       return;
     }
     
-    // Handle registration logic
-    console.log({ 
+    // Mock registration logic - in a real app this would connect to backend
+    const userData = {
       accountType, 
       fullName, 
       email, 
       phone, 
       location: accountType === "employer" ? location : undefined, 
-      password, 
+      password,
       resumeFile: accountType === "jobseeker" ? resumeFile : undefined,
       licenseFile: accountType === "employer" ? licenseFile : undefined,
-      agreeTerms 
-    });
+      status: accountType === "employer" ? "pending" : "approved",
+      role: accountType === "jobseeker" ? "jobseeker" : "employer",
+    };
     
-    toast({
-      title: "Registration Submitted",
-      description: "Your registration has been submitted successfully.",
-    });
+    console.log(userData);
+    
+    if (accountType === "employer") {
+      toast({
+        title: "Registration Submitted",
+        description: "Your employer account has been submitted for admin approval. You'll receive an email once it's approved.",
+      });
+      // Redirect to a confirmation page
+      setTimeout(() => navigate("/employer-pending"), 2000);
+    } else {
+      toast({
+        title: "Registration Successful",
+        description: "Your account has been created. You can now login.",
+      });
+      // Redirect to login page
+      setTimeout(() => navigate("/login"), 2000);
+    }
   };
 
   const handleResumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -128,6 +142,9 @@ const Register = () => {
             <TabsContent value="employer">
               <p className="text-sm text-gray-600 mt-2">
                 Create an account to post jobs and find talent
+                <span className="block mt-1 text-amber-600 font-medium">
+                  Note: Employer accounts require admin approval before access is granted
+                </span>
               </p>
             </TabsContent>
           </Tabs>

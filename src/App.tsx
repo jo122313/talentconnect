@@ -13,6 +13,8 @@ import Register from "./pages/Register";
 import NotFound from "./pages/NotFound";
 import EmployerDashboard from "./pages/EmployerDashboard";
 import UserDashboard from "./pages/UserDashboard";
+import AdminDashboard from "./pages/AdminDashboard";
+import EmployerPending from "./pages/EmployerPending";
 
 const queryClient = new QueryClient();
 
@@ -29,8 +31,10 @@ const App = () => (
           <Route path="/companies" element={<Companies />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/employer-pending" element={<EmployerPending />} />
           <Route path="/employer/dashboard" element={<EmployerDashboard />} />
           <Route path="/user/dashboard" element={<UserDashboard />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
