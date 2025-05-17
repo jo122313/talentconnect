@@ -47,14 +47,14 @@ const testimonialsData: TestimonialProps[] = [
 
 const TestimonialCard = ({ name, position, company, avatar, rating, content }: TestimonialProps) => {
   return (
-    <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-100">
+    <div className="bg-card text-card-foreground rounded-lg p-6 shadow-sm border border-gray-100 dark:border-gray-800">
       <div className="flex items-start space-x-4">
         <div className="h-12 w-12 rounded-full overflow-hidden">
           <img src={avatar} alt={name} className="h-full w-full object-cover" />
         </div>
         <div>
-          <h4 className="font-medium text-gray-900">{name}</h4>
-          <p className="text-sm text-gray-600">
+          <h4 className="font-medium text-gray-900 dark:text-white">{name}</h4>
+          <p className="text-sm text-gray-600 dark:text-gray-300">
             {position} at {company}
           </p>
           <div className="flex items-center mt-1">
@@ -62,14 +62,14 @@ const TestimonialCard = ({ name, position, company, avatar, rating, content }: T
               <Star
                 key={i}
                 size={14}
-                className={i < rating ? "text-yellow-400" : "text-gray-300"}
+                className={i < rating ? "text-yellow-400" : "text-gray-300 dark:text-gray-600"}
                 fill="currentColor"
               />
             ))}
           </div>
         </div>
       </div>
-      <p className="mt-4 text-gray-600 italic">{content}</p>
+      <p className="mt-4 text-gray-600 dark:text-gray-300 italic">{content}</p>
     </div>
   );
 };

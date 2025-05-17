@@ -63,13 +63,13 @@ const categories = [
 
 const FeaturedCategories = () => {
   return (
-    <section className="py-16 bg-job-lightGray">
+    <section className="py-16 bg-job-lightGray dark:bg-gray-900">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
             Popular Job Categories
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
             Find your career path in these top job categories with thousands of opportunities
           </p>
         </div>
@@ -79,17 +79,17 @@ const FeaturedCategories = () => {
             <Link
               key={category.id}
               to={`/jobs/category/${category.id}`}
-              className="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow group"
+              className="bg-card text-card-foreground rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow group"
             >
               <div className="flex items-center space-x-4">
                 <div className={`p-3 rounded-lg ${category.color}`}>
                   <category.icon size={24} />
                 </div>
                 <div>
-                  <h3 className="text-lg font-medium text-gray-900 group-hover:text-job-blue transition-colors">
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-white group-hover:text-job-blue transition-colors">
                     {category.name}
                   </h3>
-                  <p className="text-sm text-gray-500">{category.jobs} jobs available</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">{category.jobs} jobs available</p>
                 </div>
               </div>
             </Link>

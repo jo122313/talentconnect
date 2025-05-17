@@ -79,23 +79,23 @@ const CompanyCard = ({
   openPositions,
 }: CompanyProps) => {
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-6 transition-all hover:shadow-md">
+    <div className="bg-card text-card-foreground rounded-lg border border-gray-200 dark:border-gray-800 p-6 transition-all hover:shadow-md">
       <div className="flex items-center gap-4">
-        <div className="h-14 w-14 shrink-0 overflow-hidden rounded-full bg-gray-100 p-1">
+        <div className="h-14 w-14 shrink-0 overflow-hidden rounded-full bg-gray-100 dark:bg-gray-800 p-1">
           <img src={logo} alt={`${name} logo`} className="h-full w-full object-cover" />
         </div>
         
         <div>
-          <h3 className="text-lg font-medium text-gray-900 hover:text-job-blue transition-colors">
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white hover:text-job-blue dark:hover:text-job-blue transition-colors">
             <Link to={`/companies/${id}`}>{name}</Link>
           </h3>
           
           <div className="flex items-center mt-1">
             <div className="flex items-center mr-3">
               <Star size={14} className="text-yellow-400 mr-1" fill="currentColor" />
-              <span className="text-sm text-gray-600">{rating}</span>
+              <span className="text-sm text-gray-600 dark:text-gray-300">{rating}</span>
             </div>
-            <div className="flex items-center text-sm text-gray-500">
+            <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
               <MapPin size={14} className="mr-1 text-gray-400" />
               {location}
             </div>
@@ -103,7 +103,7 @@ const CompanyCard = ({
         </div>
       </div>
       
-      <div className="mt-4 flex items-center justify-between text-sm text-gray-500">
+      <div className="mt-4 flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
         <div className="flex items-center">
           <Users size={14} className="mr-1 text-gray-400" />
           {employeeCount} employees
@@ -118,13 +118,13 @@ const CompanyCard = ({
 
 const FeaturedCompanies = () => {
   return (
-    <section className="py-16 bg-job-lightGray">
+    <section className="py-16 bg-job-lightGray dark:bg-gray-900">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
             Top Companies Hiring
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
             Explore opportunities with these leading employers
           </p>
         </div>
