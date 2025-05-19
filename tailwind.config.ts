@@ -64,8 +64,8 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				job: {
-					blue: '#4F46E5',
-					purple: '#7C3AED',
+					blue: '#0FA5E9', // hsl(195, 83%, 49%)
+					purple: '#9333EA', // hsl(262, 83%, 64%)
 					lightBlue: 'rgba(239, 246, 255, 0.85)',
 					lightGray: 'rgba(241, 241, 241, 0.85)',
 					darkPurple: '#5B21B6',
