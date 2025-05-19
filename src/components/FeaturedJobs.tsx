@@ -103,7 +103,7 @@ const FeaturedJobs = () => {
             <Button
               onClick={handleLoadMore}
               variant="outline"
-              className="border-job-blue text-job-blue hover:bg-job-blue hover:text-white dark:border-job-purple dark:text-job-purple dark:hover:bg-job-purple dark:hover:text-white"
+              className="border-black text-black hover:bg-black hover:text-white dark:border-white dark:text-white dark:hover:bg-white dark:hover:text-black"
             >
               Load More Jobs
             </Button>

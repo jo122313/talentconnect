@@ -26,10 +26,10 @@ const JobCard = ({
   isFeatured,
 }: JobProps) => {
   return (
-    <div className={`bg-card text-card-foreground rounded-lg border ${isFeatured ? 'border-job-purple shadow-md' : 'border-gray-200 dark:border-gray-800'} p-6 transition-all hover:shadow-md`}>
+    <div className={`bg-card text-card-foreground rounded-lg border ${isFeatured ? 'border-black dark:border-white shadow-md' : 'border-gray-200 dark:border-gray-800'} p-6 transition-all hover:shadow-md`}>
       {isFeatured && (
         <div className="mb-3">
-          <span className="bg-job-purple/10 text-job-purple text-xs font-medium px-2.5 py-0.5 rounded-full">
+          <span className="bg-black/10 text-black text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-white/10 dark:text-white">
             Featured
           </span>
         </div>
@@ -41,7 +41,7 @@ const JobCard = ({
         </div>
         
         <div className="flex-1">
-          <h3 className="text-lg font-medium text-gray-900 dark:text-white hover:text-job-blue dark:hover:text-job-blue transition-colors">
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white hover:text-black dark:hover:text-gray-300 transition-colors">
             <a href={`/jobs/${id}`}>{title}</a>
           </h3>
           <p className="text-gray-600 dark:text-gray-300">{company}</p>
@@ -67,7 +67,7 @@ const JobCard = ({
         </div>
         
         <div className="flex flex-col items-center gap-2">
-          <Button variant="ghost" size="icon" className="rounded-full text-gray-400 hover:text-job-blue dark:hover:text-job-blue">
+          <Button variant="ghost" size="icon" className="rounded-full text-gray-400 hover:text-black dark:hover:text-white">
             <Bookmark size={20} />
           </Button>
         </div>

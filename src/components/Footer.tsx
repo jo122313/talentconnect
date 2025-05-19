@@ -18,26 +18,26 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Company Info */}
           <div>
-            <h3 className="text-xl font-semibold text-job-darkPurple dark:text-white mb-4">
+            <h3 className="text-xl font-semibold text-black dark:text-white mb-4">
               TalentConnect
             </h3>
-            <p className="text-job-gray dark:text-gray-300 mb-4">
+            <p className="text-gray-700 dark:text-gray-300 mb-4">
               Connecting talented professionals with their dream careers.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="text-job-gray dark:text-gray-400 hover:text-job-blue dark:hover:text-job-blue transition-colors">
+              <a href="#" className="text-gray-700 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors">
                 <Facebook size={20} />
               </a>
-              <a href="#" className="text-job-gray dark:text-gray-400 hover:text-job-blue dark:hover:text-job-blue transition-colors">
+              <a href="#" className="text-gray-700 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors">
                 <Twitter size={20} />
               </a>
-              <a href="#" className="text-job-gray dark:text-gray-400 hover:text-job-blue dark:hover:text-job-blue transition-colors">
+              <a href="#" className="text-gray-700 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors">
                 <Instagram size={20} />
               </a>
-              <a href="#" className="text-job-gray dark:text-gray-400 hover:text-job-blue dark:hover:text-job-blue transition-colors">
+              <a href="#" className="text-gray-700 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors">
                 <Linkedin size={20} />
               </a>
-              <a href="#" className="text-job-gray dark:text-gray-400 hover:text-job-blue dark:hover:text-job-blue transition-colors">
+              <a href="#" className="text-gray-700 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors">
                 <Youtube size={20} />
               </a>
             </div>
@@ -45,32 +45,32 @@ const Footer = () => {
 
           {/* For Job Seekers */}
           <div>
-            <h3 className="text-lg font-semibold text-job-darkPurple dark:text-white mb-4">
+            <h3 className="text-lg font-semibold text-black dark:text-white mb-4">
               For Job Seekers
             </h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/jobs" className="text-job-gray dark:text-gray-300 hover:text-job-blue dark:hover:text-job-blue transition-colors">
+                <Link to="/jobs" className="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">
                   Browse Jobs
                 </Link>
               </li>
               <li>
-                <Link to="/career-advice" className="text-job-gray dark:text-gray-300 hover:text-job-blue dark:hover:text-job-blue transition-colors">
+                <Link to="/career-advice" className="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">
                   Career Advice
                 </Link>
               </li>
               <li>
-                <Link to="/resume-tips" className="text-job-gray dark:text-gray-300 hover:text-job-blue dark:hover:text-job-blue transition-colors">
+                <Link to="/resume-tips" className="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">
                   Resume Tips
                 </Link>
               </li>
               <li>
-                <Link to="/interview-prep" className="text-job-gray dark:text-gray-300 hover:text-job-blue dark:hover:text-job-blue transition-colors">
+                <Link to="/interview-prep" className="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">
                   Interview Prep
                 </Link>
               </li>
               <li>
-                <Link to="/salary-guide" className="text-job-gray dark:text-gray-300 hover:text-job-blue dark:hover:text-job-blue transition-colors">
+                <Link to="/salary-guide" className="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">
                   Salary Guide
                 </Link>
               </li>
@@ -79,27 +79,27 @@ const Footer = () => {
 
           {/* For Employers */}
           <div>
-            <h3 className="text-lg font-semibold text-job-darkPurple dark:text-white mb-4">
+            <h3 className="text-lg font-semibold text-black dark:text-white mb-4">
               For Employers
             </h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/post-job" className="text-job-gray dark:text-gray-300 hover:text-job-blue dark:hover:text-job-blue transition-colors">
+                <Link to="/post-job" className="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">
                   Post a Job
                 </Link>
               </li>
               <li>
-                <Link to="/recruiting" className="text-job-gray dark:text-gray-300 hover:text-job-blue dark:hover:text-job-blue transition-colors">
+                <Link to="/recruiting" className="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">
                   Recruiting Solutions
                 </Link>
               </li>
               <li>
-                <Link to="/employer-branding" className="text-job-gray dark:text-gray-300 hover:text-job-blue dark:hover:text-job-blue transition-colors">
+                <Link to="/employer-branding" className="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">
                   Employer Branding
                 </Link>
               </li>
               <li>
-                <Link to="/pricing" className="text-job-gray dark:text-gray-300 hover:text-job-blue dark:hover:text-job-blue transition-colors">
+                <Link to="/pricing" className="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">
                   Pricing Plans
                 </Link>
               </li>
@@ -108,23 +108,23 @@ const Footer = () => {
 
           {/* Contact */}
           <div>
-            <h3 className="text-lg font-semibold text-job-darkPurple dark:text-white mb-4">
+            <h3 className="text-lg font-semibold text-black dark:text-white mb-4">
               Contact Us
             </h3>
             <div className="space-y-3">
               <div className="flex items-start space-x-3">
-                <MapPin size={18} className="text-job-gray dark:text-gray-400 mt-0.5" />
-                <span className="text-job-gray dark:text-gray-300">
+                <MapPin size={18} className="text-gray-700 dark:text-gray-400 mt-0.5" />
+                <span className="text-gray-700 dark:text-gray-300">
                   123 Job Portal Street, Careers City
                 </span>
               </div>
               <div className="flex items-center space-x-3">
-                <Phone size={18} className="text-job-gray dark:text-gray-400" />
-                <span className="text-job-gray dark:text-gray-300">+1 (555) 123-4567</span>
+                <Phone size={18} className="text-gray-700 dark:text-gray-400" />
+                <span className="text-gray-700 dark:text-gray-300">+1 (555) 123-4567</span>
               </div>
               <div className="flex items-center space-x-3">
-                <Mail size={18} className="text-job-gray dark:text-gray-400" />
-                <span className="text-job-gray dark:text-gray-300">info@talentconnect.com</span>
+                <Mail size={18} className="text-gray-700 dark:text-gray-400" />
+                <span className="text-gray-700 dark:text-gray-300">info@talentconnect.com</span>
               </div>
             </div>
           </div>
@@ -132,17 +132,17 @@ const Footer = () => {
 
         <div className="border-t border-gray-200 dark:border-gray-800 mt-10 pt-6">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-job-gray dark:text-gray-400 text-sm">
+            <p className="text-gray-700 dark:text-gray-400 text-sm">
               &copy; {new Date().getFullYear()} TalentConnect. All rights reserved.
             </p>
             <div className="flex space-x-4 mt-4 md:mt-0">
-              <Link to="/privacy" className="text-job-gray dark:text-gray-400 text-sm hover:text-job-blue dark:hover:text-job-blue transition-colors">
+              <Link to="/privacy" className="text-gray-700 dark:text-gray-400 text-sm hover:text-black dark:hover:text-white transition-colors">
                 Privacy Policy
               </Link>
-              <Link to="/terms" className="text-job-gray dark:text-gray-400 text-sm hover:text-job-blue dark:hover:text-job-blue transition-colors">
+              <Link to="/terms" className="text-gray-700 dark:text-gray-400 text-sm hover:text-black dark:hover:text-white transition-colors">
                 Terms of Service
               </Link>
-              <Link to="/cookies" className="text-job-gray dark:text-gray-400 text-sm hover:text-job-blue dark:hover:text-job-blue transition-colors">
+              <Link to="/cookies" className="text-gray-700 dark:text-gray-400 text-sm hover:text-black dark:hover:text-white transition-colors">
                 Cookies Policy
               </Link>
             </div>

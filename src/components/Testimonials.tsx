@@ -62,7 +62,7 @@ const TestimonialCard = ({ name, position, company, avatar, rating, content }: T
               <Star
                 key={i}
                 size={14}
-                className={i < rating ? "text-yellow-400" : "text-gray-300 dark:text-gray-600"}
+                className={i < rating ? "text-gray-700 dark:text-gray-300" : "text-gray-300 dark:text-gray-600"}
                 fill="currentColor"
               />
             ))}
@@ -90,7 +90,7 @@ const Testimonials = () => {
   };
 
   return (
-    <section className="py-16 bg-gradient-to-r from-job-blue to-job-purple relative overflow-hidden">
+    <section className="py-16 bg-black text-white relative overflow-hidden">
       {/* Background pattern */}
       <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]"></div>
       

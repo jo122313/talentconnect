@@ -86,13 +86,13 @@ const CompanyCard = ({
         </div>
         
         <div>
-          <h3 className="text-lg font-medium text-gray-900 dark:text-white hover:text-job-blue dark:hover:text-job-blue transition-colors">
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white hover:text-black dark:hover:text-gray-300 transition-colors">
             <Link to={`/companies/${id}`}>{name}</Link>
           </h3>
           
           <div className="flex items-center mt-1">
             <div className="flex items-center mr-3">
-              <Star size={14} className="text-yellow-400 mr-1" fill="currentColor" />
+              <Star size={14} className="text-gray-700 dark:text-gray-300 mr-1" fill="currentColor" />
               <span className="text-sm text-gray-600 dark:text-gray-300">{rating}</span>
             </div>
             <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
@@ -108,7 +108,7 @@ const CompanyCard = ({
           <Users size={14} className="mr-1 text-gray-400" />
           {employeeCount} employees
         </div>
-        <div className="text-job-blue font-medium">
+        <div className="text-black font-medium dark:text-white">
           {openPositions} open positions
         </div>
       </div>
@@ -118,7 +118,7 @@ const CompanyCard = ({
 
 const FeaturedCompanies = () => {
   return (
-    <section className="py-16 bg-job-lightGray dark:bg-gray-900">
+    <section className="py-16 bg-secondary dark:bg-gray-900">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
@@ -138,7 +138,7 @@ const FeaturedCompanies = () => {
         <div className="mt-12 text-center">
           <Link
             to="/companies"
-            className="inline-flex items-center text-job-blue hover:text-job-purple transition-colors"
+            className="inline-flex items-center text-black hover:text-gray-700 dark:text-white dark:hover:text-gray-300 transition-colors"
           >
             <span className="mr-2">Browse All Companies</span>
             <svg
