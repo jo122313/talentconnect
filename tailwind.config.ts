@@ -64,12 +64,12 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				job: {
-					blue: '#000000',
-					purple: '#000000',
-					lightBlue: '#F1F1F1',
-					lightGray: '#F1F1F1',
-					darkPurple: '#000000',
-					gray: '#777777',
+					blue: '#4F46E5',
+					purple: '#7C3AED',
+					lightBlue: 'rgba(239, 246, 255, 0.85)',
+					lightGray: 'rgba(241, 241, 241, 0.85)',
+					darkPurple: '#5B21B6',
+					gray: 'rgba(119, 119, 119, 0.9)',
 				}
 			},
 			borderRadius: {

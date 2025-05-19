@@ -4,11 +4,11 @@ import { Button } from "@/components/ui/button";
 
 const CallToAction = () => {
   return (
-    <section className="py-20 bg-background">
+    <section className="py-20 bg-transparent">
       <div className="container mx-auto px-4">
-        <div className="max-w-4xl mx-auto bg-secondary dark:bg-secondary rounded-2xl p-10 text-center relative overflow-hidden border border-gray-100 dark:border-gray-800">
+        <div className="max-w-4xl mx-auto glass-card rounded-2xl p-10 text-center relative overflow-hidden">
           {/* Background pattern */}
-          <div className="absolute inset-0 bg-[radial-gradient(#000000_1px,transparent_1px)] dark:bg-[radial-gradient(#FFFFFF_1px,transparent_1px)] [background-size:20px_20px] opacity-10"></div>
+          <div className="absolute inset-0 bg-[radial-gradient(#4338ca_1px,transparent_1px)] dark:bg-[radial-gradient(#8b5cf6_1px,transparent_1px)] [background-size:20px_20px] opacity-20"></div>
           
           <div className="relative z-10">
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
@@ -20,28 +20,28 @@ const CallToAction = () => {
             
             <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
               <Link to="/register">
-                <Button className="w-full sm:w-auto bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200">
+                <Button className="w-full sm:w-auto bg-gradient-to-r from-job-blue to-job-purple hover:from-job-purple hover:to-job-blue text-white border-0">
                   Create an Account
                 </Button>
               </Link>
               <Link to="/jobs">
-                <Button variant="outline" className="w-full sm:w-auto border-black text-black hover:bg-black hover:text-white dark:border-white dark:text-white dark:hover:bg-white dark:hover:text-black">
+                <Button variant="outline" className="w-full sm:w-auto border-job-purple text-job-purple hover:bg-job-purple/10 dark:border-job-blue dark:text-job-blue dark:hover:bg-job-blue/10">
                   Browse Jobs
                 </Button>
               </Link>
             </div>
             
-            <div className="mt-8 flex justify-center space-x-8">
+            <div className="mt-8 flex justify-center gap-8 sm:gap-16">
               <div className="text-center">
-                <p className="text-3xl font-bold text-black dark:text-white">3M+</p>
+                <p className="text-3xl font-bold text-job-blue dark:text-job-purple">3M+</p>
                 <p className="text-gray-600 dark:text-gray-300">Active Users</p>
               </div>
               <div className="text-center">
-                <p className="text-3xl font-bold text-black dark:text-white">100K+</p>
+                <p className="text-3xl font-bold text-job-blue dark:text-job-purple">100K+</p>
                 <p className="text-gray-600 dark:text-gray-300">Jobs Posted</p>
               </div>
               <div className="text-center">
-                <p className="text-3xl font-bold text-black dark:text-white">90%</p>
+                <p className="text-3xl font-bold text-job-blue dark:text-job-purple">90%</p>
                 <p className="text-gray-600 dark:text-gray-300">Success Rate</p>
               </div>
             </div>
