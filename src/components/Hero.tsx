@@ -15,7 +15,7 @@ const Hero = () => {
   };
 
   return (
-    <div className="relative bg-gradient-to-r from-job-blue to-job-purple">
+    <div className="relative bg-black text-white dark:bg-black dark:text-white">
       {/* Hero pattern background */}
       <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]"></div>
       
@@ -29,7 +29,7 @@ const Hero = () => {
           </p>
 
           {/* Search Form */}
-          <div className="bg-white p-4 md:p-6 rounded-lg shadow-lg">
+          <div className="bg-card text-card-foreground p-4 md:p-6 rounded-lg shadow-lg">
             <form onSubmit={handleSearch}>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="relative">
@@ -81,7 +81,7 @@ const Hero = () => {
               </div>
 
               <div className="mt-4">
-                <Button type="submit" className="w-full bg-job-blue hover:bg-job-purple text-white py-3">
+                <Button type="submit" className="w-full bg-black hover:bg-gray-800 text-white dark:bg-white dark:hover:bg-gray-200 dark:text-black py-3">
                   Search Jobs
                 </Button>
               </div>

@@ -81,13 +81,13 @@ const FeaturedJobs = () => {
   };
 
   return (
-    <section className="py-16 bg-white">
+    <section className="py-16 bg-background">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
             Featured Jobs
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
             Discover your next career opportunity with these handpicked opportunities
           </p>
         </div>
@@ -103,7 +103,7 @@ const FeaturedJobs = () => {
             <Button
               onClick={handleLoadMore}
               variant="outline"
-              className="border-job-blue text-job-blue hover:bg-job-blue hover:text-white"
+              className="border-black text-black hover:bg-black hover:text-white dark:border-white dark:text-white dark:hover:bg-white dark:hover:text-black"
             >
               Load More Jobs
             </Button>
