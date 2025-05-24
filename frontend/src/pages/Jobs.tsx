@@ -354,7 +354,11 @@ const Jobs = () => {
                 </h2>
                 <div className="flex items-center">
                   <span className="text-sm text-gray-600 mr-2">Sort by:</span>
-                  <select className="text-sm border rounded-md border-gray-300 py-1 px-2">
+                  <select 
+                    className="text-sm border rounded-md border-gray-300 py-1 px-2"
+                    aria-label="Sort jobs by"
+                    id="sort-jobs"
+                  >
                     <option>Most Relevant</option>
                     <option>Newest</option>
                     <option>Highest Salary</option>

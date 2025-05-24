@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useToast } from "@/hooks/use-toast";
+import { auth } from "../services/api";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -23,58 +24,49 @@ const Register = () => {
   const [licenseFile, setLicenseFile] = useState<File | null>(null);
   const [agreeTerms, setAgreeTerms] = useState(false);
   const { toast } = useToast();
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (accountType === "jobseeker" && !resumeFile) {
-      toast({
-        title: "Resume Required",
-        description: "Please upload your resume to complete registration.",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    if (accountType === "employer" && !licenseFile) {
-      toast({
-        title: "Business License Required",
-        description: "Please upload your business license to complete registration.",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    // Mock registration logic - in a real app this would connect to backend
-    const userData = {
-      accountType, 
-      fullName, 
-      email, 
-      phone, 
-      location: accountType === "employer" ? location : undefined, 
-      password,
-      resumeFile: accountType === "jobseeker" ? resumeFile : undefined,
-      licenseFile: accountType === "employer" ? licenseFile : undefined,
-      status: accountType === "employer" ? "pending" : "approved",
-      role: accountType === "jobseeker" ? "jobseeker" : "employer",
-    };
-    
-    console.log(userData);
-    
-    if (accountType === "employer") {
-      toast({
-        title: "Registration Submitted",
-        description: "Your employer account has been submitted for admin approval. You'll receive an email once it's approved.",
-      });
-      // Redirect to a confirmation page
-      setTimeout(() => navigate("/employer-pending"), 2000);
-    } else {
-      toast({
-        title: "Registration Successful",
-        description: "Your account has been created. You can now login.",
-      });
-      // Redirect to login page
-      setTimeout(() => navigate("/login"), 2000);
+    setError('');
+    setLoading(true);
+
+    try {
+      const submitData = new FormData();
+      submitData.append('fullName', fullName);
+      submitData.append('email', email);
+      submitData.append('phone', phone);
+      submitData.append('password', password);
+      
+      if (accountType === 'employer') {
+        submitData.append('location', location);
+        if (licenseFile) {
+          submitData.append('businessLicense', licenseFile);
+        }
+        await auth.registerEmployer(submitData);
+        toast({
+          title: "Registration Submitted",
+          description: "Your employer account has been submitted for admin approval.",
+        });
+        navigate("/employer-pending");
+      } else {
+        if (resumeFile) {
+          submitData.append('resume', resumeFile);
+        }
+        const response = await auth.registerJobSeeker(submitData);
+        localStorage.setItem('token', response.token);
+        localStorage.setItem('role', response.role);
+        toast({
+          title: "Registration Successful",
+          description: "Your account has been created successfully.",
+        });
+        navigate("/jobs");
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Registration failed');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -113,6 +105,20 @@ const Register = () => {
         });
         e.target.value = "";
       }
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.name === 'fullName') {
+      setFullName(e.target.value);
+    } else if (e.target.name === 'email') {
+      setEmail(e.target.value);
+    } else if (e.target.name === 'phone') {
+      setPhone(e.target.value);
+    } else if (e.target.name === 'password') {
+      setPassword(e.target.value);
+    } else if (e.target.name === 'location') {
+      setLocation(e.target.value);
     }
   };
 
@@ -158,10 +164,11 @@ const Register = () => {
                 id="fullname"
                 type="text"
                 value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
+                onChange={handleChange}
                 placeholder={accountType === "jobseeker" ? "Enter your full name" : "Enter company name"}
                 required
                 className="w-full"
+                name="fullName"
               />
             </div>
             
@@ -173,10 +180,11 @@ const Register = () => {
                 id="email"
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={handleChange}
                 placeholder="Enter your email"
                 required
                 className="w-full"
+                name="email"
               />
             </div>
             
@@ -192,10 +200,11 @@ const Register = () => {
                   id="phone"
                   type="tel"
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
+                  onChange={handleChange}
                   placeholder="Enter your phone number"
                   required
                   className="w-full pl-10"
+                  name="phone"
                 />
               </div>
             </div>
@@ -213,10 +222,11 @@ const Register = () => {
                     id="location"
                     type="text"
                     value={location}
-                    onChange={(e) => setLocation(e.target.value)}
+                    onChange={handleChange}
                     placeholder="Enter company location"
                     required
                     className="w-full pl-10"
+                    name="location"
                   />
                 </div>
               </div>
@@ -231,10 +241,11 @@ const Register = () => {
                   id="password"
                   type={showPassword ? "text" : "password"}
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={handleChange}
                   placeholder="Create a password"
                   required
                   className="w-full pr-10"
+                  name="password"
                 />
                 <button
                   type="button"
@@ -351,12 +362,16 @@ const Register = () => {
               </label>
             </div>
             
+            {error && (
+              <div className="text-red-500 text-sm text-center">{error}</div>
+            )}
+            
             <Button
               type="submit"
               className="w-full bg-job-blue hover:bg-job-purple"
-              disabled={!agreeTerms}
+              disabled={!agreeTerms || loading}
             >
-              Create Account
+              {loading ? 'Registering...' : 'Create Account'}
             </Button>
           </form>
           
