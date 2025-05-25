@@ -1,61 +1,68 @@
-const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const jwt = require("jsonwebtoken")
+const User = require("../models/User")
 
 const auth = async (req, res, next) => {
   try {
-    // Check if Authorization header exists
-    const authHeader = req.header('Authorization');
-    if (!authHeader) {
-      return res.status(401).json({ 
-        success: false,
-        message: 'No authentication token provided' 
-      });
-    }
+    const token = req.header("Authorization")?.replace("Bearer ", "")
 
-    // Extract token
-    const token = authHeader.replace('Bearer ', '');
     if (!token) {
-      return res.status(401).json({ 
-        success: false,
-        message: 'Invalid token format' 
-      });
+      return res.status(401).json({ message: "No token provided, access denied" })
     }
 
-    // Verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    
-    // Check if user still exists
-    const user = await User.findById(decoded.userId);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET)
+    const user = await User.findById(decoded.userId).select("-password")
+
     if (!user) {
-      return res.status(401).json({ 
-        success: false,
-        message: 'User no longer exists' 
-      });
+      return res.status(401).json({ message: "Token is not valid" })
     }
 
-    // Add user info to request
-    req.user = user;
-    req.userId = decoded.userId;
-    next();
+    if (user.status === "suspended") {
+      return res.status(403).json({ message: "Account suspended" })
+    }
+
+    req.user = user
+    next()
   } catch (error) {
-    if (error.name === 'JsonWebTokenError') {
-      return res.status(401).json({ 
-        success: false,
-        message: 'Invalid token' 
-      });
-    }
-    if (error.name === 'TokenExpiredError') {
-      return res.status(401).json({ 
-        success: false,
-        message: 'Token expired' 
-      });
-    }
-    console.error('Auth middleware error:', error);
-    res.status(500).json({ 
-      success: false,
-      message: 'Internal server error during authentication' 
-    });
+    console.error("Auth middleware error:", error)
+    res.status(401).json({ message: "Token is not valid" })
   }
-};
+}
 
-module.exports = auth;
+const authorize = (...roles) => {
+  return (req, res, next) => {
+    if (!req.user) {
+      return res.status(401).json({ message: "Access denied" })
+    }
+
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({
+        message: "Insufficient permissions",
+        userRole: req.user.role,
+        requiredRoles: roles,
+      })
+    }
+
+    next()
+  }
+}
+
+const checkEmployerStatus = (req, res, next) => {
+  if (req.user.role === "employer") {
+    if (req.user.status === "pending") {
+      return res.status(403).json({
+        message: "Account pending approval",
+        status: "pending",
+      })
+    }
+
+    if (req.user.status !== "approved") {
+      return res.status(403).json({
+        message: "Account not approved",
+        status: req.user.status,
+      })
+    }
+  }
+  next()
+}
+
+module.exports = { auth, authorize, checkEmployerStatus }

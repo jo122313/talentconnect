@@ -1,77 +1,111 @@
-const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
+const mongoose = require("mongoose")
+const bcrypt = require("bcryptjs")
 
-const userSchema = new mongoose.Schema({
-  fullName: {
-    type: String,
-    required: [true, 'Full name is required'],
-    trim: true
+const userSchema = new mongoose.Schema(
+  {
+    fullName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true,
+    },
+    phone: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    password: {
+      type: String,
+      required: true,
+      minlength: 6,
+    },
+    role: {
+      type: String,
+      enum: ["jobseeker", "employer", "admin"],
+      default: "jobseeker",
+    },
+    status: {
+      type: String,
+      enum: ["active", "pending", "rejected", "suspended", "approved"],
+      default: "active",
+    },
+    // Job seeker specific fields
+    resume: {
+      type: String, // URL to resume file
+    },
+    skills: [
+      {
+        type: String,
+      },
+    ],
+    experience: {
+      type: String,
+    },
+    education: {
+      type: String,
+    },
+    // Employer specific fields
+    companyName: {
+      type: String,
+    },
+    location: {
+      type: String,
+    },
+    businessLicense: {
+      type: String, // URL to business license file
+    },
+    companyDescription: {
+      type: String,
+    },
+    website: {
+      type: String,
+    },
+    // Common fields
+    profilePicture: {
+      type: String,
+    },
+    isEmailVerified: {
+      type: Boolean,
+      default: false,
+    },
+    lastLogin: {
+      type: Date,
+    },
   },
-  email: {
-    type: String,
-    required: [true, 'Email is required'],
-    unique: true,
-    trim: true,
-    lowercase: true,
-    match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please enter a valid email']
+  {
+    timestamps: true,
   },
-  phone: {
-    type: String,
-    required: [true, 'Phone number is required'],
-    trim: true
-  },
-  password: {
-    type: String,
-    required: [true, 'Password is required'],
-    minlength: [6, 'Password must be at least 6 characters long']
-  },
-  role: {
-    type: String,
-    enum: ['jobseeker', 'employer', 'admin'],
-    required: true
-  },
-  resume: {
-    type: String,
-    default: ''
-  },
-  businessLicense: {
-    type: String,
-    default: ''
-  },
-  location: {
-    type: String,
-    default: ''
-  },
-  isApproved: {
-    type: Boolean,
-    default: function() {
-      return this.role === 'jobseeker';
-    }
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  }
-});
+)
 
 // Hash password before saving
-userSchema.pre('save', async function(next) {
-  if (!this.isModified('password')) return next();
-  
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next()
+
   try {
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-    next();
+    const salt = await bcrypt.genSalt(12)
+    this.password = await bcrypt.hash(this.password, salt)
+    next()
   } catch (error) {
-    next(error);
+    next(error)
   }
-});
+})
 
-// Method to compare password
-userSchema.methods.comparePassword = async function(candidatePassword) {
-  return bcrypt.compare(candidatePassword, this.password);
-};
+// Compare password method
+userSchema.methods.comparePassword = async function (candidatePassword) {
+  return await bcrypt.compare(candidatePassword, this.password)
+}
 
-const User = mongoose.model('User', userSchema);
+// Remove password from JSON output
+userSchema.methods.toJSON = function () {
+  const user = this.toObject()
+  delete user.password
+  return user
+}
 
-module.exports = User;
+module.exports = mongoose.model("User", userSchema)

@@ -1,109 +1,95 @@
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+const multer = require("multer")
+const { CloudinaryStorage } = require("multer-storage-cloudinary")
+const cloudinary = require("cloudinary").v2
 
-// Ensure upload directories exist
-const createUploadDirs = () => {
-  const dirs = ['uploads', 'uploads/resumes', 'uploads/licenses'];
-  dirs.forEach(dir => {
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-  });
-};
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+})
 
-createUploadDirs();
+// Configure Cloudinary storage for different file types
+const createCloudinaryStorage = (folder, allowedFormats) => {
+  return new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+      folder: `talent-connect/${folder}`,
+      allowed_formats: allowedFormats,
+      resource_type: "auto",
+      public_id: (req, file) => {
+        const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9)
+        return `${file.fieldname}-${uniqueSuffix}`
+      },
+    },
+  })
+}
 
-// Configure storage
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    let uploadPath = 'uploads/';
-    if (file.fieldname === 'resume') {
-      uploadPath += 'resumes/';
-    } else if (file.fieldname === 'businessLicense') {
-      uploadPath += 'licenses/';
-    }
-    cb(null, uploadPath);
-  },
-  filename: function (req, file, cb) {
-    // Sanitize filename
-    const sanitizedFilename = file.originalname.replace(/[^a-zA-Z0-9.-]/g, '_');
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + '-' + sanitizedFilename);
-  }
-});
+// Storage configurations for different file types
+const resumeStorage = createCloudinaryStorage("resumes", ["pdf", "doc", "docx"])
+const licenseStorage = createCloudinaryStorage("licenses", ["pdf", "jpg", "jpeg", "png"])
+const profileStorage = createCloudinaryStorage("profiles", ["jpg", "jpeg", "png", "gif"])
 
-// File type validation
+// File filter function
 const fileFilter = (req, file, cb) => {
-  const allowedMimeTypes = {
-    resume: [
-      'application/pdf',
-      'application/msword',
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-    ],
-    businessLicense: [
-      'application/pdf',
-      'image/jpeg',
-      'image/jpg',
-      'image/png'
-    ]
-  };
-
-  const fieldTypes = {
-    resume: 'Resume',
-    businessLicense: 'Business License'
-  };
-
-  if (!allowedMimeTypes[file.fieldname]) {
-    return cb(new Error(`Invalid field name: ${file.fieldname}`), false);
-  }
-
-  if (!allowedMimeTypes[file.fieldname].includes(file.mimetype)) {
-    return cb(new Error(
-      `Invalid file type for ${fieldTypes[file.fieldname]}. ` +
-      `Allowed types: ${allowedMimeTypes[file.fieldname].join(', ')}`
-    ), false);
-  }
-
-  cb(null, true);
-};
-
-// Error handling middleware
-const handleMulterError = (err, req, res, next) => {
-  if (err instanceof multer.MulterError) {
-    if (err.code === 'LIMIT_FILE_SIZE') {
-      return res.status(400).json({
-        success: false,
-        message: 'File size too large. Maximum size is 5MB'
-      });
+  if (file.fieldname === "resume") {
+    // Allow PDF and DOC files for resumes
+    if (
+      file.mimetype === "application/pdf" ||
+      file.mimetype === "application/msword" ||
+      file.mimetype === "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ) {
+      cb(null, true)
+    } else {
+      cb(new Error("Only PDF and DOC files are allowed for resumes"), false)
     }
-    return res.status(400).json({
-      success: false,
-      message: `Upload error: ${err.message}`
-    });
+  } else if (file.fieldname === "businessLicense") {
+    // Allow PDF and image files for business licenses
+    if (file.mimetype === "application/pdf" || file.mimetype.startsWith("image/")) {
+      cb(null, true)
+    } else {
+      cb(new Error("Only PDF and image files are allowed for business licenses"), false)
+    }
+  } else if (file.fieldname === "profilePicture") {
+    // Allow only image files for profile pictures
+    if (file.mimetype.startsWith("image/")) {
+      cb(null, true)
+    } else {
+      cb(new Error("Only image files are allowed for profile pictures"), false)
+    }
+  } else {
+    cb(new Error("Unexpected field"), false)
   }
-  
-  if (err) {
-    return res.status(400).json({
-      success: false,
-      message: err.message
-    });
-  }
-  
-  next();
-};
+}
 
-// Configure multer
-const upload = multer({
-  storage: storage,
+// Create multer instances for different upload types
+const resumeUpload = multer({
+  storage: resumeStorage,
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB limit
+  },
   fileFilter: fileFilter,
+})
+
+const licenseUpload = multer({
+  storage: licenseStorage,
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB limit
+  },
+  fileFilter: fileFilter,
+})
+
+const profileUpload = multer({
+  storage: profileStorage,
   limits: {
     fileSize: 5 * 1024 * 1024, // 5MB limit
-    files: 1 // Only one file per upload
-  }
-});
+  },
+  fileFilter: fileFilter,
+})
 
 module.exports = {
-  upload,
-  handleMulterError
-};
+  resumeUpload,
+  licenseUpload,
+  profileUpload,
+  cloudinary,
+}
