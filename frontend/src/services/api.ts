@@ -1,3 +1,4 @@
+
 import axios from "axios"
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api"
@@ -31,6 +32,76 @@ api.interceptors.response.use(
     return Promise.reject(error)
   },
 )
+
+// TypeScript interfaces
+interface User {
+  _id: string
+  fullName: string
+  email: string
+  phone?: string
+  location?: string
+  role: string
+  status: string
+  companyDescription?: string
+  website?: string
+}
+
+interface Job {
+  _id: string
+  title: string
+  description: string
+  requirements: string
+  location: string
+  type: string
+  status: string
+  createdAt: string
+  applicationsCount: number
+  salary?: {
+    min: number
+    max: number
+    currency: string
+  }
+  experience?: string
+  education?: string
+  skills?: string[]
+  benefits?: string[]
+}
+
+interface Application {
+  _id: string
+  job: {
+    _id: string
+    title: string
+    location: string
+    type: string
+  }
+  applicant: {
+    _id: string
+    fullName: string
+    email: string
+    phone?: string
+    resume?: string
+    skills?: string[]
+    experience?: string
+    education?: string
+    gpa?: string
+    university?: string
+    graduationDate?: string
+    location?: string
+  }
+  status: string
+  createdAt: string
+  coverLetter?: string
+  notes?: string
+  interviewDate?: string
+}
+
+interface Stats {
+  activeJobs: number
+  totalJobs: number
+  totalApplications: number
+  interviewsScheduled: number
+}
 
 // Auth API
 export const auth = {
@@ -88,8 +159,15 @@ export const jobs = {
     return response.data
   },
 
-  apply: async (id: string, coverLetter?: string) => {
-    const response = await api.post(`/jobs/${id}/apply`, { coverLetter })
+  apply: async (id: string, applicationData: {
+    coverLetter?: string
+    gpa?: string
+    experienceLevel?: string
+    education?: string
+    university?: string
+    graduationDate?: string
+  }) => {
+    const response = await api.post(`/jobs/${id}/apply`, applicationData)
     return response.data
   },
 
@@ -157,6 +235,16 @@ export const employer = {
       notes,
       interviewDate,
     })
+    return response.data
+  },
+
+  sendInterviewNotification: async (id: string, interviewDetails: {
+    date: string
+    time: string
+    location: string
+    additionalNotes?: string
+  }) => {
+    const response = await api.post(`/employer/applications/${id}/interview-notification`, interviewDetails)
     return response.data
   },
 
@@ -277,6 +365,29 @@ export const user = {
       currentPassword,
       newPassword,
     })
+    return response.data
+  },
+}
+
+// Saved Jobs API
+export const savedJobs = {
+  save: async (jobId: string) => {
+    const response = await api.post(`/saved-jobs/${jobId}`)
+    return response.data
+  },
+
+  remove: async (jobId: string) => {
+    const response = await api.delete(`/saved-jobs/${jobId}`)
+    return response.data
+  },
+
+  getAll: async (params?: { page?: number; limit?: number }) => {
+    const response = await api.get('/saved-jobs', { params })
+    return response.data
+  },
+
+  checkStatus: async (jobId: string) => {
+    const response = await api.get(`/saved-jobs/${jobId}/status`)
     return response.data
   },
 }

@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect } from "react"
@@ -22,10 +23,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useToast } from "@/hooks/use-toast"
 import Navbar from "@/components/Navbar"
 import Footer from "@/components/Footer"
-import { jobs, auth } from "@/services/api"
+import { jobs, auth, savedJobs } from "@/services/api"
 
 interface Job {
   _id: string
@@ -75,8 +78,19 @@ const JobDetail = () => {
   const [applicationStatus, setApplicationStatus] = useState<ApplicationStatus>({ hasApplied: false })
   const [currentUser, setCurrentUser] = useState<any>(null)
   const [applying, setApplying] = useState(false)
-  const [coverLetter, setCoverLetter] = useState("")
   const [showApplicationForm, setShowApplicationForm] = useState(false)
+  const [isSaved, setIsSaved] = useState(false)
+  const [saving, setSaving] = useState(false)
+
+  // Enhanced application form state
+  const [applicationData, setApplicationData] = useState({
+    coverLetter: "",
+    gpa: "",
+    experienceLevel: "",
+    education: "",
+    university: "",
+    graduationDate: "",
+  })
 
   useEffect(() => {
     if (id) {
@@ -84,6 +98,12 @@ const JobDetail = () => {
       checkCurrentUser()
     }
   }, [id])
+
+  useEffect(() => {
+    if (currentUser?.role === "jobseeker" && id) {
+      checkSavedStatus()
+    }
+  }, [currentUser, id])
 
   const checkCurrentUser = async () => {
     try {
@@ -141,24 +161,50 @@ const JobDetail = () => {
       return
     }
 
-    if (!currentUser.resume) {
+    // Validate required fields
+    if (!applicationData.gpa || !applicationData.experienceLevel || !applicationData.education) {
       toast({
-        title: "Resume Required",
-        description: "Please upload your resume in your profile before applying.",
+        title: "Missing Information",
+        description: "Please fill in all required fields (GPA, Experience Level, Education).",
         variant: "destructive",
       })
-      navigate("/profile")
+      return
+    }
+
+    // Validate GPA format
+    const gpaValue = parseFloat(applicationData.gpa)
+    if (isNaN(gpaValue) || gpaValue < 0 || gpaValue > 4.0) {
+      toast({
+        title: "Invalid GPA",
+        description: "Please enter a valid GPA between 0.0 and 4.0.",
+        variant: "destructive",
+      })
       return
     }
 
     setApplying(true)
 
     try {
-      await jobs.apply(id!, coverLetter)
+      // Submit application with enhanced data
+      await jobs.apply(id!, {
+        coverLetter: applicationData.coverLetter,
+        gpa: applicationData.gpa,
+        experienceLevel: applicationData.experienceLevel,
+        education: applicationData.education,
+        university: applicationData.university,
+        graduationDate: applicationData.graduationDate,
+      })
 
       setApplicationStatus({ hasApplied: true, status: "applied", appliedDate: new Date().toISOString() })
       setShowApplicationForm(false)
-      setCoverLetter("")
+      setApplicationData({
+        coverLetter: "",
+        gpa: "",
+        experienceLevel: "",
+        education: "",
+        university: "",
+        graduationDate: "",
+      })
 
       toast({
         title: "Application Submitted",
@@ -179,6 +225,13 @@ const JobDetail = () => {
     } finally {
       setApplying(false)
     }
+  }
+
+  const handleApplicationDataChange = (field: string, value: string) => {
+    setApplicationData(prev => ({
+      ...prev,
+      [field]: value
+    }))
   }
 
   const formatDate = (dateString: string) => {
@@ -204,6 +257,65 @@ const JobDetail = () => {
     } else {
       const diffInDays = Math.floor(diffInHours / 24)
       return `${diffInDays} days ago`
+    }
+  }
+
+  const checkSavedStatus = async () => {
+    if (currentUser?.role === "jobseeker" && id) {
+      try {
+        const status = await savedJobs.checkStatus(id)
+        setIsSaved(status.isSaved)
+      } catch (error) {
+        console.log("Error checking saved status:", error)
+      }
+    }
+  }
+
+  const handleSaveJob = async () => {
+    if (!currentUser) {
+      toast({
+        title: "Login Required",
+        description: "Please login to save jobs.",
+        variant: "destructive",
+      })
+      navigate("/login")
+      return
+    }
+
+    if (currentUser.role !== "jobseeker") {
+      toast({
+        title: "Access Denied",
+        description: "Only job seekers can save jobs.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    setSaving(true)
+    try {
+      if (isSaved) {
+        await savedJobs.remove(id!)
+        setIsSaved(false)
+        toast({
+          title: "Job Removed",
+          description: "Job removed from your saved list.",
+        })
+      } else {
+        await savedJobs.save(id!)
+        setIsSaved(true)
+        toast({
+          title: "Job Saved",
+          description: "Job added to your saved list.",
+        })
+      }
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.response?.data?.message || "Failed to save job.",
+        variant: "destructive",
+      })
+    } finally {
+      setSaving(false)
     }
   }
 
@@ -267,13 +379,20 @@ const JobDetail = () => {
                     </div>
 
                     <div className="flex flex-wrap gap-3">
-                      <Button variant="outline" size="icon" className="rounded-full">
-                        <Bookmark size={18} />
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="rounded-full"
+                        onClick={handleSaveJob}
+                        disabled={saving}
+                        aria-label={isSaved ? "Remove from saved jobs" : "Save job"}
+                      >
+                        <Bookmark size={18} className={isSaved ? "fill-current text-job-blue" : ""} />
                       </Button>
-                      <Button variant="outline" size="icon" className="rounded-full">
+                      <Button variant="outline" size="icon" className="rounded-full" aria-label="Share job">
                         <Share2 size={18} />
                       </Button>
-                      <Button variant="outline" size="icon" className="rounded-full">
+                      <Button variant="outline" size="icon" className="rounded-full" aria-label="Report job">
                         <Flag size={18} />
                       </Button>
 
@@ -377,14 +496,97 @@ const JobDetail = () => {
                 <div className="mt-8 bg-white rounded-lg border border-gray-200 p-6">
                   <h3 className="text-xl font-semibold text-gray-900 mb-6">Apply for this position</h3>
 
-                  <div className="space-y-4">
+                  <div className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="gpa">GPA *</Label>
+                        <Input
+                          id="gpa"
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          max="4.0"
+                          value={applicationData.gpa}
+                          onChange={(e) => handleApplicationDataChange("gpa", e.target.value)}
+                          placeholder="3.50"
+                          className="mt-1"
+                          aria-describedby="gpa-help"
+                        />
+                        <p id="gpa-help" className="text-xs text-gray-500 mt-1">Enter your GPA on a 4.0 scale</p>
+                      </div>
+
+                      <div>
+                        <Label htmlFor="experienceLevel">Experience Level *</Label>
+                        <Select
+                          value={applicationData.experienceLevel}
+                          onValueChange={(value) => handleApplicationDataChange("experienceLevel", value)}
+                        >
+                          <SelectTrigger className="mt-1" id="experienceLevel">
+                            <SelectValue placeholder="Select experience level" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Entry Level">Entry Level (0-1 years)</SelectItem>
+                            <SelectItem value="Junior">Junior (1-3 years)</SelectItem>
+                            <SelectItem value="Mid-Level">Mid-Level (3-5 years)</SelectItem>
+                            <SelectItem value="Senior">Senior (5-10 years)</SelectItem>
+                            <SelectItem value="Expert">Expert (10+ years)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="education">Education Level *</Label>
+                        <Select
+                          value={applicationData.education}
+                          onValueChange={(value) => handleApplicationDataChange("education", value)}
+                        >
+                          <SelectTrigger className="mt-1" id="education">
+                            <SelectValue placeholder="Select education level" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="High School">High School</SelectItem>
+                            <SelectItem value="Associate Degree">Associate Degree</SelectItem>
+                            <SelectItem value="Bachelor's Degree">Bachelor's Degree</SelectItem>
+                            <SelectItem value="Master's Degree">Master's Degree</SelectItem>
+                            <SelectItem value="PhD">PhD</SelectItem>
+                            <SelectItem value="Professional Certification">Professional Certification</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div>
+                        <Label htmlFor="university">University/Institution</Label>
+                        <Input
+                          id="university"
+                          value={applicationData.university}
+                          onChange={(e) => handleApplicationDataChange("university", e.target.value)}
+                          placeholder="e.g., Stanford University"
+                          className="mt-1"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="graduationDate">Graduation Date</Label>
+                      <Input
+                        id="graduationDate"
+                        type="month"
+                        value={applicationData.graduationDate}
+                        onChange={(e) => handleApplicationDataChange("graduationDate", e.target.value)}
+                        className="mt-1"
+                        aria-label="Select graduation month and year"
+                      />
+                    </div>
+
                     <div>
                       <Label htmlFor="coverLetter">Cover Letter (Optional)</Label>
                       <Textarea
                         id="coverLetter"
-                        value={coverLetter}
-                        onChange={(e) => setCoverLetter(e.target.value)}
-                        placeholder="Tell us why you're interested in this position..."
+                        value={applicationData.coverLetter}
+                        onChange={(e) => handleApplicationDataChange("coverLetter", e.target.value)}
+                        placeholder="Tell us why you're interested in this position and what makes you a great fit..."
                         rows={6}
                         className="mt-1"
                       />

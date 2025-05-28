@@ -115,12 +115,12 @@ const Footer = () => {
               <div className="flex items-start space-x-3">
                 <MapPin size={18} className="text-gray-700 dark:text-gray-400 mt-0.5" />
                 <span className="text-gray-700 dark:text-gray-300">
-                  123 Job Portal Street, Careers City
+                  Debre Berhan Univerity,Debre Berhan Ethiopia
                 </span>
               </div>
               <div className="flex items-center space-x-3">
                 <Phone size={18} className="text-gray-700 dark:text-gray-400" />
-                <span className="text-gray-700 dark:text-gray-300">+1 (555) 123-4567</span>
+                <span className="text-gray-700 dark:text-gray-300">+2519-73-00-62-45</span>
               </div>
               <div className="flex items-center space-x-3">
                 <Mail size={18} className="text-gray-700 dark:text-gray-400" />

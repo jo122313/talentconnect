@@ -39,25 +39,38 @@ const Profile = () => {
   const loadUserProfile = async () => {
     try {
       const [authResponse, profileResponse] = await Promise.all([auth.getCurrentUser(), user.getProfile()])
+      
+      console.log('Auth Response:', authResponse)
+      console.log('Profile Response:', profileResponse)
+
+      if (!authResponse?.user) {
+        throw new Error('No user data in auth response')
+      }
 
       setCurrentUser(authResponse.user)
-      const userData = profileResponse.user
+      
+      // Ensure we have valid profile data
+      if (!profileResponse) {
+        throw new Error('No profile data received')
+      }
+
+      const userData = profileResponse
 
       setFormData({
-        fullName: userData.fullName || "",
-        phone: userData.phone || "",
-        location: userData.location || "",
-        skills: Array.isArray(userData.skills) ? userData.skills.join(", ") : userData.skills || "",
-        experience: userData.experience || "",
-        education: userData.education || "",
-        companyDescription: userData.companyDescription || "",
-        website: userData.website || "",
+        fullName: userData?.fullName || authResponse.user.fullName || "",
+        phone: userData?.phone || "",
+        location: userData?.location || "",
+        skills: Array.isArray(userData?.skills) ? userData.skills.join(", ") : userData?.skills || "",
+        experience: userData?.experience || "",
+        education: userData?.education || "",
+        companyDescription: userData?.companyDescription || "",
+        website: userData?.website || "",
       })
     } catch (error) {
       console.error("Failed to load profile:", error)
       toast({
         title: "Error",
-        description: "Failed to load profile. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to load profile. Please try again.",
         variant: "destructive",
       })
     } finally {
@@ -71,12 +84,16 @@ const Profile = () => {
 
     try {
       const updateData = new FormData()
-
-      Object.entries(formData).forEach(([key, value]) => {
-        if (value) {
-          updateData.append(key, value)
-        }
-      })
+      
+      // Append non-empty fields to FormData
+      if (formData.fullName) updateData.append('fullName', formData.fullName)
+      if (formData.phone) updateData.append('phone', formData.phone)
+      if (formData.location) updateData.append('location', formData.location)
+      if (formData.skills) updateData.append('skills', formData.skills)
+      if (formData.experience) updateData.append('experience', formData.experience)
+      if (formData.education) updateData.append('education', formData.education)
+      if (formData.companyDescription) updateData.append('companyDescription', formData.companyDescription)
+      if (formData.website) updateData.append('website', formData.website)
 
       await user.updateProfile(updateData)
 
@@ -87,11 +104,11 @@ const Profile = () => {
 
       // Reload profile data
       loadUserProfile()
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to update profile:", error)
       toast({
         title: "Error",
-        description: "Failed to update profile. Please try again.",
+        description: error.response?.data?.message || "Failed to update profile. Please try again.",
         variant: "destructive",
       })
     } finally {

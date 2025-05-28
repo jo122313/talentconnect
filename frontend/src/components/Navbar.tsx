@@ -125,6 +125,12 @@ const Navbar = () => {
             >
               Companies
             </Link>
+            <Link
+              to="/contact"
+              className="text-gray-700 dark:text-gray-300 hover:text-job-blue dark:hover:text-job-purple transition-colors"
+            >
+              Contact Us
+            </Link>
 
             {/* Dashboard link - only show for logged in users */}
             {user && getDashboardLink() && (

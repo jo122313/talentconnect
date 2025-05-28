@@ -1,15 +1,8 @@
+"use client"
 
-import { Link } from "react-router-dom";
-import {
-  Briefcase,
-  Edit,
-  FileText,
-  Home,
-  LayoutDashboard,
-  MessageSquare,
-  Settings,
-  User,
-} from "lucide-react";
+import { useState, useEffect } from "react"
+import { Link } from "react-router-dom"
+import { Briefcase, Edit, FileText, Home, LayoutDashboard, MessageSquare, Settings, User } from "lucide-react"
 
 import {
   Sidebar,
@@ -24,111 +17,125 @@ import {
   SidebarMenuItem,
   SidebarProvider,
   SidebarTrigger,
-} from "@/components/ui/sidebar";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Progress } from "@/components/ui/progress";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+} from "@/components/ui/sidebar"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Progress } from "@/components/ui/progress"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useToast } from "@/hooks/use-toast"
+import { auth, user, savedJobs } from "@/services/api"
 
 const UserDashboard = () => {
-  // Mock data for the user profile
-  const profile = {
-    name: "Sarah Johnson",
-    title: "Senior UX Designer",
-    location: "New York, USA",
-    profileCompletion: 85,
-    about: "Creative UX/UI designer with 6+ years of experience in designing user interfaces for web and mobile applications. Proficient in Figma, Adobe XD, and Sketch.",
-    skills: ["UI/UX Design", "Figma", "Adobe XD", "Sketch", "User Research", "Prototyping", "Wireframing"],
-    experience: [
-      {
-        company: "Design Co.",
-        title: "Senior UX Designer",
-        period: "2023 - Present",
-        description: "Lead designer for multiple high-profile clients."
-      },
-      {
-        company: "Creative Agency",
-        title: "UX Designer",
-        period: "2020 - 2023",
-        description: "Worked on user research and interface design for mobile apps."
-      }
-    ],
-    education: [
-      {
-        institution: "Design University",
-        degree: "Master's in Interaction Design",
-        year: "2018 - 2020"
-      },
-      {
-        institution: "State University",
-        degree: "Bachelor's in Graphic Design",
-        year: "2014 - 2018"
-      }
-    ]
-  };
+  const { toast } = useToast()
+  const [currentUser, setCurrentUser] = useState<any>(null)
+  const [dashboardStats, setDashboardStats] = useState<any>(null)
+  const [applications, setApplications] = useState<any[]>([])
+  const [savedJobsList, setSavedJobsList] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  // Mock data for job applications
-  const applications = [
-    {
-      id: 1,
-      company: "Tech Solutions Inc.",
-      position: "Senior UX Designer",
-      date: "2025-04-01",
-      status: "Applied"
-    },
-    {
-      id: 2,
-      company: "Digital Innovations",
-      position: "Lead Product Designer",
-      date: "2025-03-28",
-      status: "Interview Scheduled"
-    },
-    {
-      id: 3,
-      company: "Creative Studios",
-      position: "UI/UX Designer",
-      date: "2025-03-25",
-      status: "Reviewed"
-    },
-    {
-      id: 4,
-      company: "Design Agency",
-      position: "User Experience Lead",
-      date: "2025-03-20",
-      status: "Rejected"
-    }
-  ];
+  useEffect(() => {
+    loadDashboardData()
+  }, [])
 
-  // Mock data for saved jobs
-  const savedJobs = [
-    {
-      id: 1,
-      company: "Innovation Labs",
-      position: "Senior Product Designer",
-      location: "Remote",
-      posted: "2 days ago"
-    },
-    {
-      id: 2,
-      company: "Tech Startup",
-      position: "UI Designer",
-      location: "San Francisco, CA",
-      posted: "1 week ago"
-    },
-    {
-      id: 3,
-      company: "Design Collective",
-      position: "UX Researcher",
-      location: "Chicago, IL",
-      posted: "3 days ago"
+  const loadDashboardData = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+
+      console.log("Loading dashboard data...")
+
+      // Load user data
+      const userResponse = await auth.getCurrentUser()
+      console.log("User response:", userResponse)
+      setCurrentUser(userResponse.user || userResponse)
+
+      // Load dashboard stats
+      try {
+        const statsResponse = await user.getDashboardStats()
+        console.log("Stats response:", statsResponse)
+        setDashboardStats(statsResponse)
+      } catch (statsError) {
+        console.error("Failed to load stats:", statsError)
+        // Continue without stats
+      }
+
+      // Load applications
+      try {
+        const appsResponse = await user.getApplications({ limit: 5 })
+        console.log("Applications response:", appsResponse)
+        setApplications(appsResponse.applications || [])
+      } catch (appsError) {
+        console.error("Failed to load applications:", appsError)
+        // Continue without applications
+      }
+
+      // Load saved jobs
+      try {
+        const savedResponse = await savedJobs.getAll({ limit: 5 })
+        console.log("Saved jobs response:", savedResponse)
+        setSavedJobsList(savedResponse.savedJobs || [])
+      } catch (savedError) {
+        console.error("Failed to load saved jobs:", savedError)
+        // Continue without saved jobs
+      }
+    } catch (error: any) {
+      console.error("Failed to load dashboard data:", error)
+      setError(error.response?.data?.message || "Failed to load dashboard data")
+      toast({
+        title: "Error",
+        description: error.response?.data?.message || "Failed to load dashboard data",
+        variant: "destructive",
+      })
+    } finally {
+      setLoading(false)
     }
-  ];
+  }
+
+  const calculateProfileCompletion = () => {
+    if (!currentUser) return 0
+
+    let completed = 0
+    const total = 6
+
+    if (currentUser.fullName) completed++
+    if (currentUser.email) completed++
+    if (currentUser.phone) completed++
+    if (currentUser.resume) completed++
+    if (currentUser.skills && currentUser.skills.length > 0) completed++
+    if (currentUser.experience) completed++
+
+    return Math.round((completed / total) * 100)
+  }
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen w-full bg-gray-50 items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading dashboard...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex min-h-screen w-full bg-gray-50 items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-red-600 mb-4">Access Denied</h2>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <Button onClick={() => (window.location.href = "/")}>Go to Home</Button>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full bg-gray-50">
-        <UserSidebar />
+        <UserSidebar currentUser={currentUser} />
         <div className="flex-1">
           <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background px-6">
             <SidebarTrigger />
@@ -149,29 +156,39 @@ const UserDashboard = () => {
                   <CardContent className="pt-6">
                     <div className="flex flex-col items-center text-center">
                       <Avatar className="h-24 w-24">
-                        <AvatarImage src="/placeholder.svg" alt={profile.name} />
-                        <AvatarFallback>{profile.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                        <AvatarImage
+                          src={currentUser?.profilePicture || "/placeholder.svg"}
+                          alt={currentUser?.fullName}
+                        />
+                        <AvatarFallback>
+                          {currentUser?.fullName
+                            ?.split(" ")
+                            .map((n: string) => n[0])
+                            .join("") || "U"}
+                        </AvatarFallback>
                       </Avatar>
-                      <h2 className="mt-4 text-xl font-semibold">{profile.name}</h2>
-                      <p className="text-muted-foreground">{profile.title}</p>
-                      <p className="text-sm text-muted-foreground">{profile.location}</p>
-                      
+                      <h2 className="mt-4 text-xl font-semibold">{currentUser?.fullName || "User"}</h2>
+                      <p className="text-muted-foreground">{currentUser?.experience || "Job Seeker"}</p>
+                      <p className="text-sm text-muted-foreground">{currentUser?.location || "Location not set"}</p>
+
                       <div className="mt-6 w-full">
                         <div className="flex justify-between text-sm">
                           <span>Profile Completion</span>
-                          <span>{profile.profileCompletion}%</span>
+                          <span>{calculateProfileCompletion()}%</span>
                         </div>
-                        <Progress className="mt-2" value={profile.profileCompletion} />
+                        <Progress className="mt-2" value={calculateProfileCompletion()} />
                       </div>
-                      
-                      <Button className="mt-6 w-full">
-                        <Edit className="mr-2 h-4 w-4" />
-                        Edit Profile
+
+                      <Button className="mt-6 w-full" asChild>
+                        <Link to="/profile">
+                          <Edit className="mr-2 h-4 w-4" />
+                          Edit Profile
+                        </Link>
                       </Button>
                     </div>
                   </CardContent>
                 </Card>
-                
+
                 <Card className="md:col-span-2">
                   <CardHeader>
                     <CardTitle>Application Overview</CardTitle>
@@ -179,15 +196,15 @@ const UserDashboard = () => {
                   <CardContent>
                     <div className="grid grid-cols-3 gap-4 text-center">
                       <div className="rounded-lg border p-3">
-                        <div className="text-2xl font-bold">{applications.length}</div>
+                        <div className="text-2xl font-bold">{dashboardStats?.totalApplications || 0}</div>
                         <p className="text-xs text-muted-foreground">Total Applications</p>
                       </div>
                       <div className="rounded-lg border p-3">
-                        <div className="text-2xl font-bold">1</div>
+                        <div className="text-2xl font-bold">{dashboardStats?.interviews || 0}</div>
                         <p className="text-xs text-muted-foreground">Interviews</p>
                       </div>
                       <div className="rounded-lg border p-3">
-                        <div className="text-2xl font-bold">{savedJobs.length}</div>
+                        <div className="text-2xl font-bold">{savedJobsList?.length || 0}</div>
                         <p className="text-xs text-muted-foreground">Saved Jobs</p>
                       </div>
                     </div>
@@ -201,7 +218,7 @@ const UserDashboard = () => {
                   <TabsTrigger value="applications">Applications</TabsTrigger>
                   <TabsTrigger value="saved">Saved Jobs</TabsTrigger>
                 </TabsList>
-                
+
                 <TabsContent value="profile">
                   <div className="grid gap-6 md:grid-cols-2">
                     <Card>
@@ -209,115 +226,147 @@ const UserDashboard = () => {
                         <CardTitle>About Me</CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <p>{profile.about}</p>
-                        
+                        <p>{currentUser?.experience || "No experience information provided yet."}</p>
+
                         <div className="mt-6">
                           <h3 className="font-medium">Skills</h3>
                           <div className="mt-2 flex flex-wrap gap-1">
-                            {profile.skills.map((skill, i) => (
-                              <div key={i} className="rounded-full bg-muted px-3 py-1 text-xs">
-                                {skill}
-                              </div>
-                            ))}
+                            {currentUser?.skills?.length > 0 ? (
+                              currentUser.skills.map((skill: string, i: number) => (
+                                <div key={i} className="rounded-full bg-muted px-3 py-1 text-xs">
+                                  {skill}
+                                </div>
+                              ))
+                            ) : (
+                              <p className="text-sm text-muted-foreground">No skills added yet.</p>
+                            )}
                           </div>
                         </div>
                       </CardContent>
                     </Card>
-                    
-                    <div className="space-y-6">
-                      <Card>
-                        <CardHeader>
-                          <CardTitle>Experience</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="space-y-4">
-                            {profile.experience.map((exp, i) => (
-                              <div key={i} className="border-b pb-4 last:border-0 last:pb-0">
-                                <h3 className="font-medium">{exp.title}</h3>
-                                <p className="text-sm text-muted-foreground">{exp.company} • {exp.period}</p>
-                                <p className="mt-1 text-sm">{exp.description}</p>
-                              </div>
-                            ))}
+
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Contact Information</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-4">
+                          <div>
+                            <h3 className="font-medium">Email</h3>
+                            <p className="text-sm text-muted-foreground">{currentUser?.email}</p>
                           </div>
-                        </CardContent>
-                      </Card>
-                      
-                      <Card>
-                        <CardHeader>
-                          <CardTitle>Education</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="space-y-4">
-                            {profile.education.map((edu, i) => (
-                              <div key={i} className="border-b pb-4 last:border-0 last:pb-0">
-                                <h3 className="font-medium">{edu.degree}</h3>
-                                <p className="text-sm text-muted-foreground">{edu.institution} • {edu.year}</p>
-                              </div>
-                            ))}
+                          <div>
+                            <h3 className="font-medium">Phone</h3>
+                            <p className="text-sm text-muted-foreground">{currentUser?.phone || "Not provided"}</p>
                           </div>
-                        </CardContent>
-                      </Card>
-                    </div>
+                          <div>
+                            <h3 className="font-medium">Resume</h3>
+                            {currentUser?.resume ? (
+                              <a
+                                href={currentUser.resume}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-sm text-blue-600 hover:underline"
+                              >
+                                View Resume
+                              </a>
+                            ) : (
+                              <p className="text-sm text-muted-foreground">No resume uploaded</p>
+                            )}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
                   </div>
                 </TabsContent>
-                
+
                 <TabsContent value="applications">
                   <Card>
                     <CardHeader>
-                      <CardTitle>Job Applications</CardTitle>
+                      <CardTitle>Recent Applications</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <div className="divide-y rounded-md border">
-                        {applications.map((app) => (
-                          <div key={app.id} className="flex items-center justify-between p-4">
-                            <div className="space-y-1">
-                              <h3 className="font-medium">{app.position}</h3>
-                              <p className="text-sm text-muted-foreground">
-                                {app.company} • Applied on {new Date(app.date).toLocaleDateString()}
-                              </p>
+                      {applications.length > 0 ? (
+                        <div className="divide-y rounded-md border">
+                          {applications.map((app) => (
+                            <div key={app._id} className="flex items-center justify-between p-4">
+                              <div className="space-y-1">
+                                <h3 className="font-medium">{app.job?.title || "Job Title"}</h3>
+                                <p className="text-sm text-muted-foreground">
+                                  {app.job?.company?.companyName || app.job?.company?.fullName} • Applied on{" "}
+                                  {new Date(app.createdAt).toLocaleDateString()}
+                                </p>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span
+                                  className={`text-sm px-2 py-1 rounded-full ${
+                                    app.status === "applied"
+                                      ? "bg-blue-100 text-blue-700"
+                                      : app.status === "interview"
+                                        ? "bg-green-100 text-green-700"
+                                        : app.status === "review"
+                                          ? "bg-purple-100 text-purple-700"
+                                          : app.status === "hired"
+                                            ? "bg-green-100 text-green-700"
+                                            : "bg-red-100 text-red-700"
+                                  }`}
+                                >
+                                  {app.status.charAt(0).toUpperCase() + app.status.slice(1)}
+                                </span>
+                              </div>
                             </div>
-                            <div className="flex items-center gap-2">
-                              <span className={`text-sm px-2 py-1 rounded-full ${
-                                app.status === "Applied" 
-                                  ? "bg-blue-100 text-blue-700" 
-                                  : app.status === "Interview Scheduled" 
-                                  ? "bg-green-100 text-green-700"
-                                  : app.status === "Reviewed"
-                                  ? "bg-purple-100 text-purple-700"
-                                  : "bg-red-100 text-red-700"
-                              }`}>
-                                {app.status}
-                              </span>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-center text-muted-foreground py-8">
+                          No applications yet.{" "}
+                          <Link to="/jobs" className="text-blue-600 hover:underline">
+                            Browse jobs
+                          </Link>{" "}
+                          to get started!
+                        </p>
+                      )}
                     </CardContent>
                   </Card>
                 </TabsContent>
-                
+
                 <TabsContent value="saved">
                   <Card>
                     <CardHeader>
                       <CardTitle>Saved Jobs</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <div className="divide-y rounded-md border">
-                        {savedJobs.map((job) => (
-                          <div key={job.id} className="flex items-center justify-between p-4">
-                            <div className="space-y-1">
-                              <h3 className="font-medium">{job.position}</h3>
-                              <p className="text-sm text-muted-foreground">
-                                {job.company} • {job.location}
-                              </p>
-                              <p className="text-xs text-muted-foreground">Posted {job.posted}</p>
+                      {savedJobsList.length > 0 ? (
+                        <div className="divide-y rounded-md border">
+                          {savedJobsList.map((savedJob) => (
+                            <div key={savedJob._id} className="flex items-center justify-between p-4">
+                              <div className="space-y-1">
+                                <h3 className="font-medium">{savedJob.job?.title}</h3>
+                                <p className="text-sm text-muted-foreground">
+                                  {savedJob.job?.company?.companyName || savedJob.job?.company?.fullName} •{" "}
+                                  {savedJob.job?.location}
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                  Saved {new Date(savedJob.createdAt).toLocaleDateString()}
+                                </p>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Button size="sm" asChild>
+                                  <Link to={`/jobs/${savedJob.job._id}`}>View Job</Link>
+                                </Button>
+                              </div>
                             </div>
-                            <div className="flex items-center gap-2">
-                              <Button size="sm">Apply Now</Button>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-center text-muted-foreground py-8">
+                          No saved jobs yet.{" "}
+                          <Link to="/jobs" className="text-blue-600 hover:underline">
+                            Browse jobs
+                          </Link>{" "}
+                          and save the ones you like!
+                        </p>
+                      )}
                     </CardContent>
                   </Card>
                 </TabsContent>
@@ -327,11 +376,11 @@ const UserDashboard = () => {
         </div>
       </div>
     </SidebarProvider>
-  );
-};
+  )
+}
 
 // Sidebar component for user dashboard
-const UserSidebar = () => {
+const UserSidebar = ({ currentUser }: { currentUser: any }) => {
   return (
     <Sidebar>
       <SidebarHeader className="border-b">
@@ -352,9 +401,11 @@ const UserSidebar = () => {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton>
-                  <Briefcase className="h-4 w-4" />
-                  <span>Find Jobs</span>
+                <SidebarMenuButton asChild>
+                  <Link to="/jobs">
+                    <Briefcase className="h-4 w-4" />
+                    <span>Find Jobs</span>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
@@ -370,9 +421,11 @@ const UserSidebar = () => {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton>
-                  <Home className="h-4 w-4" />
-                  <span>Go to Home</span>
+                <SidebarMenuButton asChild>
+                  <Link to="/">
+                    <Home className="h-4 w-4" />
+                    <span>Go to Home</span>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
@@ -383,15 +436,19 @@ const UserSidebar = () => {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton>
-                  <User className="h-4 w-4" />
-                  <span>Profile</span>
+                <SidebarMenuButton asChild>
+                  <Link to="/profile">
+                    <User className="h-4 w-4" />
+                    <span>Profile</span>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton>
-                  <Settings className="h-4 w-4" />
-                  <span>Settings</span>
+                <SidebarMenuButton asChild>
+                  <Link to="/settings">
+                    <Settings className="h-4 w-4" />
+                    <span>Settings</span>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
@@ -401,15 +458,23 @@ const UserSidebar = () => {
       <SidebarFooter className="border-t p-4">
         <div className="flex flex-col gap-4 px-2">
           <div className="text-xs text-muted-foreground">
-            Logged in as <span className="font-medium">Sarah Johnson</span>
+            Logged in as <span className="font-medium">{currentUser?.fullName || "User"}</span>
           </div>
-          <Button variant="outline" size="sm">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              localStorage.removeItem("token")
+              localStorage.removeItem("role")
+              window.location.href = "/"
+            }}
+          >
             Log out
           </Button>
         </div>
       </SidebarFooter>
     </Sidebar>
-  );
-};
+  )
+}
 
-export default UserDashboard;
+export default UserDashboard

@@ -11,10 +11,11 @@ export default defineConfig({
     },
   },
   server: {
-    port: 3000, // Changed from 3000 to 3001
+    port: 3000,
+    strictPort: true, // Add this to force port 3000
     host: true,
     hmr: {
-      port: 3000,
-    },
+      port: 3000
+    }
   },
 })

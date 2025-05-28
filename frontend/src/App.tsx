@@ -19,6 +19,11 @@ import EmployerDashboard from "./pages/EmployerDashboard"
 import UserDashboard from "./pages/UserDashboard"
 import AdminDashboard from "./pages/AdminDashboard"
 import EmployerPending from "./pages/EmployerPending"
+import Contact from "./pages/Contact";
+import CareerAdvice from "./pages/CareerAdvice";
+import ResumeTips from "./pages/ResumeTips";
+import InterviewPrep from "./pages/InterviewPrep";
+import SalaryGuide from "./pages/SalaryGuide";
 
 const queryClient = new QueryClient()
 
@@ -42,6 +47,11 @@ const App = () => (
               <Route path="/companies" element={<Companies />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/career-advice" element={<CareerAdvice />} />
+              <Route path="/resume-tips" element={<ResumeTips />} />
+              <Route path="/interview-prep" element={<InterviewPrep />} />
+              <Route path="/salary-guide" element={<SalaryGuide />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/post-job" element={<PostJob />} />

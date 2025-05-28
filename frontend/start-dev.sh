@@ -1,37 +1,19 @@
 #!/bin/bash
 
-# Start development servers for both frontend and backend
+echo "🚀 Starting TalentConnect Backend Server..."
 
-echo "Starting Talent Connect Gateway Development Servers..."
+# Check if .env file exists
+if [ ! -f .env ]; then
+    echo "❌ .env file not found! Please create one with your environment variables."
+    exit 1
+fi
 
-# Start backend server
-echo "Starting backend server..."
-cd backend
-npm run dev &
-BACKEND_PID=$!
+# Check if node_modules exists
+if [ ! -d node_modules ]; then
+    echo "📦 Installing dependencies..."
+    npm install
+fi
 
-# Wait a moment for backend to start
-sleep 3
-
-# Start frontend server
-echo "Starting frontend server..."
-cd ../
-npm run dev &
-FRONTEND_PID=$!
-
-echo "Backend running on http://localhost:5000"
-echo "Frontend running on http://localhost:3000"
-echo "Press Ctrl+C to stop both servers"
-
-# Function to cleanup processes
-cleanup() {
-    echo "Stopping servers..."
-    kill $BACKEND_PID $FRONTEND_PID
-    exit
-}
-
-# Trap Ctrl+C
-trap cleanup INT
-
-# Wait for processes
-wait
+# Start the server
+echo "🌟 Starting server in development mode..."
+npm run dev
