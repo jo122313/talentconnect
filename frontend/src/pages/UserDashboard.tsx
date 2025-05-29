@@ -409,18 +409,6 @@ const UserSidebar = ({ currentUser }: { currentUser: any }) => {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton>
-                  <FileText className="h-4 w-4" />
-                  <span>Applications</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton>
-                  <MessageSquare className="h-4 w-4" />
-                  <span>Messages</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
                 <SidebarMenuButton asChild>
                   <Link to="/">
                     <Home className="h-4 w-4" />

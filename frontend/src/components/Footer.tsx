@@ -19,7 +19,7 @@ const Footer = () => {
           {/* Company Info */}
           <div>
             <h3 className="text-xl font-semibold text-black dark:text-white mb-4">
-              TalentConnect
+              JobConnect
             </h3>
             <p className="text-gray-700 dark:text-gray-300 mb-4">
               Connecting talented professionals with their dream careers.
@@ -69,11 +69,6 @@ const Footer = () => {
                   Interview Prep
                 </Link>
               </li>
-              <li>
-                <Link to="/salary-guide" className="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">
-                  Salary Guide
-                </Link>
-              </li>
             </ul>
           </div>
 
@@ -84,23 +79,13 @@ const Footer = () => {
             </h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/post-job" className="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">
+                <Link to="/employer/dashboard" className="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">
                   Post a Job
                 </Link>
               </li>
               <li>
-                <Link to="/recruiting" className="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">
-                  Recruiting Solutions
-                </Link>
-              </li>
-              <li>
-                <Link to="/employer-branding" className="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">
-                  Employer Branding
-                </Link>
-              </li>
-              <li>
-                <Link to="/pricing" className="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">
-                  Pricing Plans
+                <Link to="/employer/dashboard" className="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">
+                  schedule Interview
                 </Link>
               </li>
             </ul>
@@ -124,7 +109,7 @@ const Footer = () => {
               </div>
               <div className="flex items-center space-x-3">
                 <Mail size={18} className="text-gray-700 dark:text-gray-400" />
-                <span className="text-gray-700 dark:text-gray-300">info@talentconnect.com</span>
+                <span className="text-gray-700 dark:text-gray-300">natnaelgeletanegm.com</span>
               </div>
             </div>
           </div>
