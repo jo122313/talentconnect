@@ -4,6 +4,7 @@ const Application = require("../models/Application")
 const User = require("../models/User")
 const { auth, authorize, checkEmployerStatus } = require("../middleware/auth")
 const { body, validationResult } = require("express-validator")
+const { sendInterviewNotification } = require("../utils/emailService")
 
 const router = express.Router()
 
@@ -326,6 +327,44 @@ router.get("/applications/:id", async (req, res) => {
   } catch (error) {
     console.error("Get application details error:", error)
     res.status(500).json({ message: "Server error" })
+  }
+})
+
+// Send interview notification
+router.post("/applications/:id/interview-notification", async (req, res) => {
+  try {
+    const { id } = req.params
+    const { date, time, location, additionalNotes } = req.body
+
+    const application = await Application.findOne({
+      _id: id,
+      employer: req.user._id,
+    }).populate("applicant", "fullName email").populate("job", "title")
+
+    if (!application) {
+      return res.status(404).json({ message: "Application not found" })
+    }
+
+    // Update application status to interview
+    application.status = "interview"
+    application.interviewDate = new Date(date)
+    await application.save()
+
+    // Send interview notification email
+    await sendInterviewNotification(
+      application.applicant.email,
+      application.applicant.fullName,
+      application.job.title,
+      { date, time, location, additionalNotes }
+    )
+
+    res.json({
+      message: "Interview notification sent successfully",
+      application,
+    })
+  } catch (error) {
+    console.error("Send interview notification error:", error)
+    res.status(500).json({ message: "Failed to send interview notification" })
   }
 })
 

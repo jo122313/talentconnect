@@ -20,6 +20,7 @@ import { Eye, Mail, FileText, Plus, Briefcase, Users, Clock, TrendingUp, User, S
 import Navbar from "@/components/Navbar"
 import Footer from "@/components/Footer"
 import { employer, auth, user as userAPI } from "@/services/api"
+import InterviewNotificationDialog from "@/components/InterviewNotificationDialog"
 
 interface Job {
   _id: string
@@ -118,6 +119,8 @@ const EmployerDashboard = () => {
   const [candidateDetailsOpen, setCandidateDetailsOpen] = useState(false)
   const [selectedCandidate, setSelectedCandidate] = useState<Application | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const [interviewDialogOpen, setInterviewDialogOpen] = useState(false)
+  const [selectedApplication, setSelectedApplication] = useState<Application | null>(null)
 
   // Form states for new job
   const [formData, setFormData] = useState({
@@ -516,6 +519,45 @@ const EmployerDashboard = () => {
     }
   }
 
+  const handleInterviewClick = (application: Application) => {
+    setSelectedApplication(application)
+    setInterviewDialogOpen(true)
+  }
+
+  const handleInterviewConfirm = async (interviewDetails: {
+    date: string
+    time: string
+    location: string
+    additionalNotes: string
+  }) => {
+    if (!selectedApplication) return
+
+    try {
+      await employer.sendInterviewNotification(selectedApplication._id, interviewDetails)
+      
+      // Update local state
+      setApplications(prev => 
+        prev.map(app => 
+          app._id === selectedApplication._id 
+            ? { ...app, status: 'interview', ...interviewDetails }
+            : app
+        )
+      )
+
+      toast({
+        title: "Success",
+        description: "Interview notification sent successfully!",
+      })
+    } catch (error) {
+      console.error("Failed to send interview notification:", error)
+      toast({
+        title: "Error",
+        description: "Failed to send interview notification. Please try again.",
+        variant: "destructive",
+      })
+    }
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col">
@@ -823,7 +865,7 @@ const EmployerDashboard = () => {
                                   <Button
                                     size="sm"
                                     className="bg-purple-600 hover:bg-purple-700"
-                                    onClick={() => updateCandidateStatus(application._id, "interview")}
+                                    onClick={() => handleInterviewClick(application)}
                                   >
                                     <Mail className="h-4 w-4 mr-1" /> Interview
                                   </Button>
@@ -1242,7 +1284,7 @@ const EmployerDashboard = () => {
                           <Button
                             className="bg-purple-600 hover:bg-purple-700"
                             onClick={() => {
-                              updateCandidateStatus(selectedCandidate._id, "interview")
+                              handleInterviewClick(selectedCandidate)
                               setCandidateDetailsOpen(false)
                             }}
                           >
@@ -1288,6 +1330,21 @@ const EmployerDashboard = () => {
               )}
             </SheetContent>
           </Sheet>
+
+          {/* Interview Notification Dialog */}
+          <InterviewNotificationDialog
+            open={interviewDialogOpen}
+            onOpenChange={setInterviewDialogOpen}
+            candidate={selectedApplication ? {
+              _id: selectedApplication._id,
+              fullName: selectedApplication.applicant.fullName,
+              email: selectedApplication.applicant.email,
+              job: {
+                title: selectedApplication.job.title
+              }
+            } : null}
+            onConfirm={handleInterviewConfirm}
+          />
         </div>
       </div>
 

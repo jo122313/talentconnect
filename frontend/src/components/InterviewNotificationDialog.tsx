@@ -73,6 +73,11 @@ const InterviewNotificationDialog = ({
       onOpenChange(false)
     } catch (error) {
       console.error("Failed to send interview notification:", error)
+      toast({
+        title: "Error",
+        description: "Failed to send interview notification. Please try again.",
+        variant: "destructive",
+      })
     } finally {
       setSending(false)
     }
